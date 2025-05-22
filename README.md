@@ -34,7 +34,7 @@ Please be prepared to discuss during an interview:
 - Initially customers can only select a single fund (however there should be scope to invest in multiple in the future)
 - We need to keep record of investments and make this visible to the user
 - I have been given a situation where a customer wishes to invest £25,000 into a fund (this is more than the annual ISA allowance).
-- There is no mention of the type of ISA (stocks and shares/LISA) so my solution will focus on a stocks and shares ISA but aim to be flexible enough to accomodate different ISA types at a later date.
+- There is no mention of the type of ISA (stocks and shares/LISA) so my solution will focus on a stocks and shares ISA but aim to be flexible enough to accommodate different ISA types at a later date.
 
 ## Customer journeys
 
@@ -71,27 +71,29 @@ As an existing Cushon retail customer with an invested ISA who is authenticated:
 
 ## Proposed Solution
 
-I propose the addition of two new services: 'retailCustomerService' to manage retail customers and 'retailAccountService' which manages retail accounts (this is intetionally generic in anticipation of Cushon offering other types of savings accounts).
+*The research that led to my solution can be found [here](https://github.com/jameswhoughton/cushon/blob/main/RESEARCH.md).*
+
+I propose the addition of two new services: 'retailCustomerService' to manage retail customers and 'retailAccountService' which manages retail accounts (this is intentionally generic in anticipation of Cushon offering other types of savings accounts).
 
 I did consider the possibility of reusing an existing 'customer' service (that may already exist for creating employee customers), however having a separate one has several benefits:
 
-- Can scale independantly of existing employeeCustomerService
+- Can scale independently of existing employeeCustomerService
 - Creates a clear boundary for auditing
-- Allows either each entity to evolve independantly (e.g. addition of new fields etc.)
+- Allows either each entity to evolve independently (e.g. addition of new fields etc.)
 
 On the other hand it does add some more complexity and possibly some duplication (this could be slightly mitigated through the use of a shared package as mentioned in improvements). Without knowing more about the existing system it is hard to say more at this time.
 
 Both services will be stateless and have a single replica of each service to increase resiliency.
 
-Databases will use MySQL, this alligns with other services as well as being capable of handling big data, when designing the schema I have tried to optimize the table sizes as much as possible. 
+Databases will use MySQL, this aligns with other services as well as being capable of handling big data, when designing the schema I have tried to optimise the table sizes as much as possible. 
 
-I have noted that the 'account_transactions' table will likely be the fastest growing table and therefore it is worth considering splitting the data (either by partitioning the table or sharding the database). As transactional information should be retained (indefinetly?) table partitioning may not be suitable as the number of tables might grow to be unmanageable, so a sharding approach might be more apporpriate.
+I have noted that the 'account_transactions' table will likely be the fastest growing table and therefore it is worth considering splitting the data (either by partitioning the table or sharding the database). As transactional information should be retained (indefinitely?) table partitioning may not be suitable as the number of tables might grow to be unmanageable, so a sharding approach might be more apporpriate.
 
 I have focused my efforts on building out these services in Go.
 
 ### ERD
 
-My proposed DB schema can be found [here](/jameswhoughton/cushon/erd.svg), the diagram has some notes explaining my decisions.
+My proposed DB schema can be found [here](https://raw.githubusercontent.com/jameswhoughton/cushon/refs/heads/main/erd.svg), the diagram has some notes explaining my decisions.
 
 ### Assumptions
 

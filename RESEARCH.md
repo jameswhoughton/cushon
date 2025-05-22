@@ -1,7 +1,5 @@
 # Research
 
-Here I have included the research used to drive my final solution.
-
 ## What is an ISA and who can have one?
 
 - Tax free investment account
@@ -30,7 +28,7 @@ NI numbers follow the pattern: 2 letters followed by 6 numbers, then A, B, C or 
 
 *In my code I make the assumption that there is a service inside Cushon to verify NI numbers.*
 
-Country of tax residency is used over address as ISAs are also available to members of the armed forces and crown servents who may be stationed abroad. **This is my understanding, there maybe some nuance here**
+Country of tax residency is used over address as ISAs are also available to members of the armed forces and crown servants who may be stationed abroad. **This is my understanding, there maybe some nuance here**
 
 ## Key functionality of an ISA account
 
@@ -60,6 +58,6 @@ The number of daily active users would likely be fairly low (relative to total u
 
 We would still have to consider spikes which could happen at the end/beginning of the month (payday), around the end of the financial year and during ad campaigns.
 
-The system therefore should be able to accomodate these data spikes, a well written Go service on reasonable hardware should be able to handle this level of traffic but it would still be a good idea to have atleast a single replica and distribute traffic with a load balancer, not only will this easily accomodate the traffic, it will also make the system more resilient.
+The system therefore should be able to accommodate these data spikes, a well written Go service on reasonable hardware should be able to handle this level of traffic but it would still be a good idea to have at least a single replica and distribute traffic with a load balancer, not only will this easily accommodate the traffic, it will also make the system more resilient.
 
-We might also want to consider horizontal scaling of the database through sharding (sepcifically for the retail savings service as this keeps track of transactions and could grow very quickly to 10s of millions of rows as customers on board and make investments).
+We might also want to consider horizontal scaling of the database through sharding (specifically for the retail savings service as this keeps track of transactions and could grow very quickly to 10s of millions of rows as customers on board and make investments).
