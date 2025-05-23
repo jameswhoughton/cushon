@@ -56,7 +56,7 @@ Based on the above we should consider a total number of customers on the level o
 
 The number of daily active users would likely be fairly low (relative to total users) as once a user has registered and invested, they will likely not be logging in frequently to check (assume perhaps once a month/quarter).
 
-We would still have to consider spikes which could happen at the end/beginning of the month (payday), around the end of the financial year and during ad campaigns.
+We would still have to consider spikes which could happen at the end/beginning of the month (payday), around the end of the financial year and during ad campaigns. Without more information it's hard to estimate the percentage of DAU but if this were a real project reviewing the traffic for employee ISAs could give us some idea. 
 
 The system therefore should be able to accommodate these data spikes, a well written Go service on reasonable hardware should be able to handle this level of traffic but it would still be a good idea to have at least a single replica and distribute traffic with a load balancer, not only will this easily accommodate the traffic, it will also make the system more resilient.
 

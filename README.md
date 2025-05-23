@@ -73,7 +73,7 @@ As an existing Cushon retail customer with an invested ISA who is authenticated:
 
 *The research that led to my solution can be found [here](https://github.com/jameswhoughton/cushon/blob/main/RESEARCH.md).*
 
-I propose the addition of two new services: 'retailCustomerService' to manage retail customers and 'retailAccountService' which manages retail accounts (this is intentionally generic in anticipation of Cushon offering other types of savings accounts).
+I propose the addition of two new services: 'retailCustomerService' to manage retail customers and 'retailAccountService' which manages retail accounts (this is intentionally generic in anticipation of Cushon offering other types of savings accounts). Both services use a REST api to expose thier functionality to the wider system.
 
 I did consider the possibility of reusing an existing 'customer' service (that may already exist for creating employee customers), however having a separate one has several benefits:
 
@@ -89,7 +89,11 @@ Databases will use MySQL, this aligns with other services as well as being capab
 
 I have noted that the 'account_transactions' table will likely be the fastest growing table and therefore it is worth considering splitting the data (either by partitioning the table or sharding the database). As transactional information should be retained (indefinitely?) table partitioning may not be suitable as the number of tables might grow to be unmanageable, so a sharding approach might be more apporpriate.
 
-I have focused my efforts on building out these services in Go.
+I have focused my efforts on building out the account service in Go.
+
+Considering the specific case of a customer who wishes to deposit £25,000 into a Cushon ISA and invest it all into the Cushon equities fund. From my research, if the money has not previously been invested then this would not be allowed in a single transaction (as it is above the annual ISA allowace of £20,000) if however the customer is transferring this money from another ISA this transfer would be allowed. 
+
+For now the focus is on cash deposits however the ability to transfer between ISAs without restriction should be considered as an enhancement.
 
 ### ERD
 
@@ -97,20 +101,27 @@ My proposed DB schema can be found [here](https://raw.githubusercontent.com/jame
 
 ### Assumptions
 
-- The existing Authentication system can be used to support retail customers.
+- The existing authentication system can be used to support retail customers.
 - The same funds are available to both retail and employee customers (and that a service already exists to manage them).
 - For the purposes of this assignment, currency is assumed to be GBP.
 - All monetary values are stored to the nearest penny as ints.
 - There is an existing service to perform trades.
 - All dates are stored as UTC.
+- There is an existing service to process deposits (card payment/bank transfer etc.).
+- There is an API gateway in place to serve the web UI and provide authentication.
 
 ## Future enhancements
 
+- I have focused on a basic ISA, I would look to extend my solution to cover other ISA accounts along with GIA.
 - Store specific currency information.
 - Consider notifications to the user (email/post).
 - Explore the idea of a shared package for personal information types and validation (e.g. validating NI number)
 - Customer personal information could be encrypted when inserted into the database, this would help to potentially reduce the impact of a data breach (direct DB access) at the cost of slight performance hit.
-- Explore the best approach to splitting the data
+- Explore the best approach to splitting the data.
+- Consider pagination for transactions.
+- Consider permissions/admin routes for account management and reporting.
+- Consider external ISA to Cushon ISA transfers.
+- Introduce in memory implementations of repositories (backed by contract tests) to improve test performance.
 
 ## Endpoints
 
@@ -122,18 +133,18 @@ My proposed DB schema can be found [here](https://raw.githubusercontent.com/jame
 
 ### RetailAccountService
 
-#### POST /v1/customer/{customer_id}/account
+#### POST /api/v1/account
 
 - Create a new account for the customer
 - Customer is limited to one cushon ISA
 
-#### GET /v1/account/{account_id}
+#### GET /api/v1/account/{account_id}
 
 - List of invested funds
 - List of recent transactions
 
-#### POST /v1/account/{account_id}/invest
+#### POST /api/v1/account/{account_id}/fund/{fund_id}/invest
 
-- Assign money from the account to a fund
+- Invest money into a single fund
 
 
