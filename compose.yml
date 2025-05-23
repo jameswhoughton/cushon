@@ -1,0 +1,9 @@
+services:
+  cushon-db-testing:
+    image: mysql
+    restart: always
+    ports:
+      - "8002:3306"
+    environment:
+      MYSQL_DATABASE: retail_accounts
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
