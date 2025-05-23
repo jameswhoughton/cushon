@@ -1,0 +1,11 @@
+CREATE TABLE account_funds (
+	id INT NOT NULL AUTO_INCREMENT,
+	account_id BINARY(16) NOT NULL,
+	fund_id BINARY(16) NOT NULL,
+	balance INT NOT NULL,
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+	PRIMARY KEY (id),
+	FOREIGN KEY (account_id)
+		REFERENCES accounts(id)
+);
