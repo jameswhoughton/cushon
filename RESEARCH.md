@@ -63,12 +63,12 @@ Country of tax residency is used over address as ISAs are also available to memb
 ### Considered for the assignment
 
 - Open an ISA account
-- Pay money into the account
 - Invest in a fund
 - View transactions
 
 ### Future functionality
 
+- Pay money into the account without investing
 - Transfer money between funds
 - Set up ongoing payments into a fund
 - Withdraw money
