@@ -95,7 +95,7 @@ There are different types of ISA which Cushon may wish to offer. The new service
 
 ### Service Architecture
 
-I have begun to build out the retail account microservice using the service/repository pattern and TDD. The service is not complete, I have omitted the handlers and any sort of frontend.
+I have begun to build out the retail account microservice using the service/repository pattern and TDD. The service is partially complete, handlers and the frontend still need to be added along with some additional tests.
 
 - Services contain the business logic
 - Repositories are only responsible for communicating with the MySQL database.
@@ -129,9 +129,9 @@ My proposed DB schema can be found [here](https://raw.githubusercontent.com/jame
 - Support cash balances (uninvested money in the ISA)
 
 
-## To Run
+## Running Tests
 
-I do not have a working service, however, if you wish to run the tests you can do so by following these steps:
+To run the tests against the service, follow these steps.
 
 1. Ensure Go and Docker are installed.
 2. Run `docker compose up -d` at the project root.
