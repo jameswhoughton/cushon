@@ -74,7 +74,7 @@ func (r *AccountRepository) Invest(ctx context.Context, accountId uuid.UUID, inv
 
 		// Insert a new transaction
 		_, err := tx.ExecContext(ctx, `
-		INSERT INTO account_transactions
+		INSERT INTO fund_transactions
 		(account_fund_id, trade_id, transaction_type, amount)
 		VALUES (?, UUID_TO_BIN(?), ?, ?)
 		`, investment.AccountFundId, investment.TradeId, investment.TransactionType, investment.Amount)
@@ -112,7 +112,7 @@ func (r *AccountRepository) GetAccountTransactions(ctx context.Context, accountI
 		FROM accounts a
 		LEFT JOIN account_funds f
 		ON a.id = f.account_id
-		LEFT JOIN account_transactions t
+		LEFT JOIN fund_transactions t
 		ON f.id = t.account_fund_id
 		WHERE a.id = UUID_TO_BIN(?)
 		AND t.created_at >= ?
@@ -146,7 +146,7 @@ func (r *AccountRepository) GetTotalInvestedToDate(ctx context.Context, accountI
 		FROM accounts a
 		LEFT JOIN account_funds f
 		ON a.id = f.account_id
-		LEFT JOIN account_transactions  t
+		LEFT JOIN fund_transactions  t
 		ON f.id = t.account_fund_id
 		WHERE a.id = ?
 		AND transaction_type = 'customer'

@@ -1,4 +1,4 @@
-CREATE TABLE account_transactions (
+CREATE TABLE fund_transactions (
 	id INT NOT NULL AUTO_INCREMENT,
 	account_fund_id INT NOT NULL,
 	trade_id BINARY(16) NOT NULL, -- Assumed to be UUID

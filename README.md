@@ -110,7 +110,7 @@ In this specific case the customer would not be permitted to deposit £25,000 in
 
 ### Schema
 
-My proposed DB schema can be found [here](https://raw.githubusercontent.com/jameswhoughton/cushon/refs/heads/main/erd.svg), the diagram has some notes explaining my decisions.
+My proposed DB schema can be found [here](https://raw.githubusercontent.com/jameswhoughton/cushon/refs/heads/main/schema.png).
 
 ## Future Enhancements
 
