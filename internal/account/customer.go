@@ -28,3 +28,15 @@ func ValidateNINumber(ni string) error {
 
 	return nil
 }
+
+// Retrieve customer entity by id
+//
+// This is another dummy function to make a call to the external
+// retail customer service to fetch the Customer information.
+// Returns an error if the customer does not exist.
+func GetCustomer(id uuid.UUID) (Customer, error) {
+
+	// Make external call to retail customer service
+
+	return Customer{}, nil
+}

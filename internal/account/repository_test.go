@@ -12,8 +12,9 @@ import (
 // Helper function to connect to the testing database
 //
 // The database is migrated when this function is called.
-// The database implementation is returned along with a deferrable closedown function
-// that rollsback the database.
+// The database implementation of the repository is returned
+// along with a deferrable closedown function that rolls back
+// the database.
 func NewTestRepository() (account.Repository, func()) {
 	conn, err := sql.Open("mysql", "root@tcp(127.0.0.1:8002)/retail_accounts")
 

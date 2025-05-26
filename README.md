@@ -126,3 +126,12 @@ My proposed DB schema can be found [here](https://raw.githubusercontent.com/jame
 - Consider external ISA to Cushon ISA transfers.
 - Introduce in-memory implementations of repositories (backed by contract tests) to improve test performance.
 - Support cash balances (uninvested money in the ISA)
+
+
+## To Run
+
+I do not have a working service, however, if you wish to run the tests you can do so by following these steps:
+
+1. Ensure Go and Docker are installed.
+2. Run `docker compose up -d` at the project root.
+3. Once the database is up and running, run `go test ./...`
