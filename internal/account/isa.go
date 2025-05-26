@@ -16,6 +16,13 @@ type StartOfTaxYear struct {
 	Month int
 }
 
+// Service to manage ISA accounts
+//
+// ISAs must adhere to the following rules
+// - Only available to UK tax residents over the age of 18
+// - The account holder must have a valid NI number
+// - The account holder is limited by how much they can deposit each tax year.
+// - There are no limits on withdrawals
 type ISAService struct {
 	repository     Repository
 	annualLimit    int
@@ -36,18 +43,18 @@ func (s *ISAService) CreateAccount(ctx context.Context, customer Customer) (Acco
 
 	// Ensure the customer is a UK tax resident
 	if customer.TaxResidency != "uk" {
-		return Account{}, fmt.Errorf("Only UK tax residents can open an ISA")
+		return Account{}, ErrAccountCreatePermission{"Only UK tax residents can open an ISA"}
 	}
 
 	// Ensure the customer is over 18
 	cutOff := time.Now().AddDate(-18, 0, 0)
 	if customer.DateOfBirth.After(cutOff) {
-		return Account{}, fmt.Errorf("Only customers who are over the age of 18 can open an ISA")
+		return Account{}, ErrAccountCreatePermission{"Only customers who are over the age of 18 can open an ISA"}
 	}
 
 	// Ensure the customer's NI number is valid
 	if err := s.niValidator(customer.NINumber); err != nil {
-		return Account{}, fmt.Errorf("Customer NI number could not be verified: %v", err)
+		return Account{}, ErrAccountCreatePermission{"Customer NI number could not be verified: " + err.Error()}
 	}
 
 	account := Account{

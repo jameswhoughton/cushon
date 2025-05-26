@@ -10,6 +10,9 @@ import (
 // Representation of an investment into a given fund
 //
 // A positive amount represents a purchase whereas a negative amount represents a sale.
+// TransactionType provides further information about the transaction (for example whether
+// it was a customer action: 'cust' or an accumulation investment: 'acc').
+// The TradeId references the external trading service.
 type Investment struct {
 	FundId          uuid.UUID
 	AccountFundId   int64
@@ -24,7 +27,7 @@ type Investment struct {
 //
 // Methods should be accessed through the service layer
 type Repository interface {
-	// Create a new account, the ID is populated on success
+	// Create a new account
 	//
 	// Returns error if the account cannot be created
 	Create(ctx context.Context, account *Account) error
@@ -42,6 +45,6 @@ type Repository interface {
 	// Return the total amount invested by a customer from the 'fromDate' to the current time.
 	//
 	// Any transactions due to dividends from accumulation funds are ignored.
-	// Any customer withdrawals are ignored.
+	// Any customer withdrawals (negative amounts) are ignored.
 	GetTotalInvestedToDate(ctx context.Context, accountId uuid.UUID, date time.Time) (int, error)
 }

@@ -69,6 +69,10 @@ func TestCannotCreateAnAccountIfCustomerDoesNotReachRequirements(t *testing.T) {
 			if err == nil {
 				t.Errorf("Expected error, got nil")
 			}
+
+			if !errors.As(err, &account.ErrAccountCreatePermission{}) {
+				t.Errorf("Expected error of type %T, got %T: %v", account.ErrAccountCreatePermission{}, err, err)
+			}
 		})
 	}
 }

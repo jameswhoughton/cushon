@@ -95,7 +95,7 @@ There are different types of ISA which Cushon may wish to offer. The new service
 
 ### Service Architecture
 
-I have begun to build out the retail account microservice using the service/repository pattern and TDD.
+I have begun to build out the retail account microservice using the service/repository pattern and TDD. The service is not complete, I have omitted the handlers and any sort of frontend.
 
 - Services contain the business logic
 - Repositories are only responsible for communicating with the MySQL database.
@@ -103,6 +103,8 @@ I have begun to build out the retail account microservice using the service/repo
 - I am using docker to run a testing MySQL instance which is migrated/rolled back between tests.
 
 In order to accommodate different types of ISA, I have defined a Service interface that can be implemented for each type of account, on top of this I have created a factory to return the correct service where required. For common service actions I have created some generic unexported functions, these can be used to compose the account-specific services to reduce code duplication, for example, `createAccount()` in `internal/account/service.go` is responsible for validating the account passed in and calling the underlying repository method to store the account the database (a group of actions common to all account types).
+
+
 
 ### Scenario: customer who wishes to deposit £25,000 into a Cushon ISA all into the Cushon Equities Fund
 

@@ -11,6 +11,14 @@ import (
 
 var ErrTransactionFilterInValid = errors.New("Filter values are not valid")
 
+type ErrAccountCreatePermission struct {
+	message string
+}
+
+func (e ErrAccountCreatePermission) Error() string {
+	return "Unable to create account: " + e.message
+}
+
 type TransactionFilter struct {
 	StartDate time.Time         `json:"start_date"`
 	EndDate   time.Time         `json:"end_date"`
@@ -49,9 +57,27 @@ type Transaction struct {
 	Amount          int
 }
 
+// Interface representing an account Service
+//
+// This should be implemented by each type of account (e.g. ISA, LISA etc.)
+// and contain any rules associated with that type of account.
 type Service interface {
+	// Creates a new account for the customer
+	//
+	// Returns ErrAccountCreatePermission error if the customer is unable
+	// to create the specific account.
+	// Account validation happens here.
 	CreateAccount(ctx context.Context, customer Customer) (Account, error)
+
+	// Makes one or more fund investments
+	//
+	// Investments are validated here, if any of the investments fail, none
+	// are processed.
 	Invest(ctx context.Context, accountId uuid.UUID, investments []Investment) error
+
+	// Get a list of transactions for an account
+	//
+	// Returns a filtered list of transactions for an account (limited to a 1 year window).
 	AccountTransactions(ctx context.Context, accountId uuid.UUID, filter TransactionFilter) ([]Transaction, error)
 }
 

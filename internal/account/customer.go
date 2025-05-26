@@ -19,8 +19,8 @@ type Customer struct {
 
 // Ensure NI number is Valid
 //
-// This a a dummy function to make an external call to an external
-// service to verify a National insurance number.
+// This a a dummy function to make an external call to an existing
+// service in order to verify a National insurance number.
 // Returns an error if the number is not valid.
 func ValidateNINumber(ni string) error {
 
