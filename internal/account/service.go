@@ -34,22 +34,25 @@ func (f *TransactionFilter) Validate() bool {
 }
 
 const (
-	TRANSACTION_TYPE_CUSTOMER string = "customer_purchase"
-	TRANSACTION_TYPE_FUND     string = "fund_purchase"
+	// Represents a transaction where money was deposited by the account owner
+	TRANSACTION_TYPE_CUSTOMER string = "cust"
+	// Represents an internal transaction where dividends from a fund was reinvested
+	TRANSACTION_TYPE_ACCUMULATION string = "acc"
+
+	// There are likely other transaction types which can be added here
 )
 
 type Transaction struct {
-	Id              int
+	Id              int64
 	FundId          uuid.UUID
 	TransactionType string
 	Amount          int
 }
 
-// Implementations of the Service interface should
 type Service interface {
-	CreateAccount(ctx context.Context, customerId uuid.UUID) (Account, error)
+	CreateAccount(ctx context.Context, customer Customer) (Account, error)
 	Invest(ctx context.Context, accountId uuid.UUID, investments []Investment) error
-	AccountTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error)
+	AccountTransactions(ctx context.Context, accountId uuid.UUID, filter TransactionFilter) ([]Transaction, error)
 }
 
 type ServiceFactory struct {
@@ -66,13 +69,19 @@ func (f *ServiceFactory) Service(accountType string) Service {
 	}
 }
 
+func NewServiceFactory(isa *ISAService) *ServiceFactory {
+	return &ServiceFactory{
+		isa: isa,
+	}
+}
+
 // Generic function to create a new account
 //
 // This function is designed to be used across all different account types.
 // If an account is invalid it will return a ErrorAccountInvalid error
 func createAccount(ctx context.Context, repo Repository, account Account) (Account, error) {
 	if !account.Validate() {
-		return account, ErrorAccountInvalid{}
+		return account, ErrAccountInvalid
 	}
 
 	err := repo.Create(ctx, &account)
@@ -89,5 +98,5 @@ func getAccountTransactions(ctx context.Context, repo Repository, accountId uuid
 		return []Transaction{}, ErrTransactionFilterInValid
 	}
 
-	return repo.GetAccountTransactions(ctx, filter)
+	return repo.GetAccountTransactions(ctx, accountId, filter)
 }

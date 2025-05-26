@@ -1,6 +1,7 @@
 package account
 
 import (
+	"errors"
 	"slices"
 	"time"
 
@@ -19,12 +20,10 @@ type Account struct {
 	Errors      map[string]string `json:"errors"`
 }
 
-/*
-Validate a new Account entity
-
-Any errors are stored in a map using the json struct tag
-so that they can be returned straight back to the UI.
-*/
+// Validate a new Account entity
+//
+// Any errors are stored in a map using the json struct tag
+// so that they can be returned straight back to the UI.
 func (a *Account) Validate() bool {
 	if a.Errors == nil {
 		a.Errors = make(map[string]string, 2)
@@ -41,8 +40,4 @@ func (a *Account) Validate() bool {
 	return len(a.Errors) == 0
 }
 
-type ErrorAccountInvalid struct{}
-
-func (e ErrorAccountInvalid) Error() string {
-	return "Account invalid"
-}
+var ErrAccountInvalid = errors.New("Account invalid")

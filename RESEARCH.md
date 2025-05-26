@@ -97,13 +97,13 @@ Splitting data across multiple databases
 #### Pros
 
 - Improves resiliency (any outages are less impactful).
-- Increases response time if DBs are geographically distrubuted (although less of a cooncern here as the customers are mainly UK residents).
+- Increases response time if DBs are geographically distributed (although less of a concern here as the customers are mainly UK residents).
 - Theoretically no limit to how far you could scale.
 - Backups/maintenance 
 
 #### Cons
 
-- Adds complexity to both querying and inserting data, if the correct sharding technique is not chosen databases can become unbalanaced.
+- Adds complexity to both querying and inserting data, if the correct sharding technique is not chosen databases can become unbalanced.
 - Higher hardware costs.
 
 ### Partitioning
@@ -117,4 +117,4 @@ Splitting one or many tables within a database
 #### Cons
 
 - Data is still stored in a single database so this approach does not improve resiliency.
-- Backups/maintenace could be more time consuming
+- Backups/maintenance could be more time consuming

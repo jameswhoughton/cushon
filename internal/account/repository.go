@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -11,7 +12,7 @@ import (
 // A positive amount represents a purchase whereas a negative amount represents a sale.
 type Investment struct {
 	FundId          uuid.UUID
-	AccountFundId   int
+	AccountFundId   int64
 	TradeId         uuid.UUID
 	TransactionType string
 	Amount          int
@@ -33,7 +34,14 @@ type Repository interface {
 	// If the account is already invested in the fund, the total invested will be incremented
 	// Returns an error if any of the investments fail, if any do fail non of the investments
 	// will be processed.
-	Invest(ctx context.Context, account *Account, investments []Investment) error
+	Invest(ctx context.Context, accountId uuid.UUID, investments []Investment) error
 
-	GetAccountTransactions(ctx context.Context, filter TransactionFilter) ([]Transaction, error)
+	// Returns a slice of transactions for the given account limited by the filter
+	GetAccountTransactions(ctx context.Context, accountId uuid.UUID, filter TransactionFilter) ([]Transaction, error)
+
+	// Return the total amount invested by a customer from the 'fromDate' to the current time.
+	//
+	// Any transactions due to dividends from accumulation funds are ignored.
+	// Any customer withdrawals are ignored.
+	GetTotalInvestedToDate(ctx context.Context, accountId uuid.UUID, date time.Time) (int, error)
 }

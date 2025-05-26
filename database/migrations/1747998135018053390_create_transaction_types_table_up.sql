@@ -1,5 +1,0 @@
-CREATE TABLE transaction_types (
-	id INT NOT NULL AUTO_INCREMENT,
-	code VARCHAR(50) NOT NULL,
-	PRIMARY KEY (id)
-);

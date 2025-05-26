@@ -64,14 +64,14 @@ Both services will use a REST API to expose their functionality to the wider sys
 
 Separating the logic for retail customers and accounts from the existing employee services has several benefits:
 
-- Allows the customer/employees servies to scale independantly of one another.
+- Allows the customer/employees services to scale independently of one another.
 - Provides a clear boundary for auditing/regulatory purposes.
 - Allows entities to evolve independently (e.g. addition of new fields etc.)
 
 There are however some trade-offs:
 
 - Adds more complexity to the system (for example if an employee also opened a retail account we might want to be able to link the accounts).
-- At least in the beginning there will likely be duplication between the services (althought this could be mitigated though the use of a shared package).
+- At least in the beginning there will likely be duplication between the services (although this could be mitigated though the use of a shared package).
 
 ### Scale And Storage
 
@@ -83,11 +83,11 @@ MySQL is a good choice of database for these services for the following reasons:
 
 - It can handle big data.
 - The data is relational so more suited to a relational database.
-- Aligns with other Cushon services (while not critical for microservices to use the same technology, team familiarality is a benefit).
+- Aligns with other Cushon services (while not critical for microservices to use the same technology, team familiarity is a benefit).
 
 ### Business considerations
 
-There are different types of ISA which Cushon may wish to offer. The new service should be able to accomodate the following:
+There are different types of ISA which Cushon may wish to offer. The new service should be able to accommodate the following:
 
 - Different requirements to open an account.
 - Different restrictions on Depositing into an account.
@@ -95,7 +95,7 @@ There are different types of ISA which Cushon may wish to offer. The new service
 
 ### Service Architecture
 
-I have begun to build out the retail account microservice uing the service/repository pattern and TDD.
+I have begun to build out the retail account microservice using the service/repository pattern and TDD.
 
 - Services contain the business logic
 - Repositories are only responsible for communicating with the MySQL database.
