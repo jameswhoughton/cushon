@@ -3,11 +3,39 @@
 ## What is an ISA and who can have one?
 
 - Tax free investment account
+- There are several types of ISA
+
+### Stocks and shares ISA
+
 - Annual deposit limit of £20,000
 - Only available to customers who:
-    - are over the age of 18
-    - Live in the UK (or have tax residency in the UK)
-    - Have a valid National Insurance number
+    - are over the age of 18.
+    - Live in the UK (or have tax residency in the UK).
+    - Have a valid National Insurance number.
+- Can withdraw money at anytime.
+
+### Lifetime ISA
+
+- Annual deposit limit of £4,000 (government adds additional 25% per year)
+- Only available to customers who:
+    - are over the age of 18 but less than 40.
+    - Live in the UK (or have tax residency in the UK).
+    - Have a valid National Insurance number.
+- Can only withdraw money if the customer:
+    - Is buying their first home.
+    - Aged 60+.
+    - Terminally ill with < 12 months to live.
+
+### Junior ISA
+
+- Annual deposit limit of £9,000
+- Opened by the parent or guardian of the child.
+- Only available to customers who:
+    - are under the age of 18.
+    - Live in the UK (or have tax residency in the UK).
+- Child can take control of the account when they reach 16
+- Child cannot withdraw until they are 18+
+
 
 ## What information do we need to on-board a retail customer?
 
@@ -18,7 +46,7 @@
 - Date of birth
 - Country of tax residency
 
-## Verifying suitability for a stocks and shares ISA account
+## Verifying suitability for an ISA account
 
 [https://www.gov.uk/individual-savings-accounts#who-can-open-an-isa](https://www.gov.uk/individual-savings-accounts#who-can-open-an-isa)
 
@@ -60,4 +88,33 @@ We would still have to consider spikes which could happen at the end/beginning o
 
 The system therefore should be able to accommodate these data spikes, a well written Go service on reasonable hardware should be able to handle this level of traffic but it would still be a good idea to have at least a single replica and distribute traffic with a load balancer, not only will this easily accommodate the traffic, it will also make the system more resilient.
 
-We might also want to consider horizontal scaling of the database through sharding (specifically for the retail savings service as this keeps track of transactions and could grow very quickly to 10s of millions of rows as customers on board and make investments).
+There are two main options when scaling databases:
+
+### Sharding
+
+Splitting data across multiple databases
+
+#### Pros
+
+- Improves resiliency (any outages are less impactful).
+- Increases response time if DBs are geographically distrubuted (although less of a cooncern here as the customers are mainly UK residents).
+- Theoretically no limit to how far you could scale.
+- Backups/maintenance 
+
+#### Cons
+
+- Adds complexity to both querying and inserting data, if the correct sharding technique is not chosen databases can become unbalanaced.
+- Higher hardware costs.
+
+### Partitioning
+
+Splitting one or many tables within a database
+
+#### Pros
+
+- Easier to query a partition of data, for example, transactional data partioned by month.
+
+#### Cons
+
+- Data is still stored in a single database so this approach does not improve resiliency.
+- Backups/maintenace could be more time consuming

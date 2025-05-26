@@ -4,7 +4,7 @@
 
 Cushon already offers ISAs and Pensions to Employees of Companies (Employers) who have an existing arrangement with
 Cushon. Cushon would like to be able to offer ISA investments to retail (direct) customers who are not associated with an
-employer. Cushon would like to keep the functionality for retail ISA customers separate from it’s Employer based offering
+employer. Cushon would like to keep the functionality for retail ISA customers separate from it's Employer based offering
 where practical.
 
 When customers invest into a Cushon ISA they should be able to select a single fund from a list of available options. Currently they will be restricted to selecting a single fund however in the future we would anticipate allowing selection of multiple options.
@@ -28,123 +28,101 @@ Please be prepared to discuss during an interview:
 - Any assumptions you have made in the solution you have presented.
 - Any enhancements you considered but decided not to cover.
 
-## Key points
+## Key Points
 
-- Functionality for retail ISAs should be kept separate, I have however made some assumptions about core services that might be shared (e.g. performing trades).
-- Initially customers can only select a single fund (however there should be scope to invest in multiple in the future)
-- We need to keep record of investments and make this visible to the user
-- I have been given a situation where a customer wishes to invest £25,000 into a fund (this is more than the annual ISA allowance).
-- There is no mention of the type of ISA (stocks and shares/LISA) so my solution will focus on a stocks and shares ISA but aim to be flexible enough to accommodate different ISA types at a later date.
+- Functionality for retail ISAs should be kept separate, I have however made some assumptions about core services that might be shared (e.g. funds and performing trades).
+- Initially, customers can only select a single fund (however there should be scope to invest in multiple in the future)
+- We need to keep a record of investments and make this visible to the user
+    - Should also consider long term storage of transactional data (even after an account has been closed).
+- I have been given a situation in which a customer wishes to invest £25,000 in a fund (this is more than the annual ISA allowance).
+- I assume that different types of ISA will be offered to retail customers (e.g. Junior ISA and LISA). The different types of ISA have different requirements to create an account and restrictions when depositing into them. Our solution should account for these variations.
 
-## Customer journeys
+## My Assumptions
 
-### Scenario: A new customer can register and create an ISA
-
-As a new Cushon customer:
-
-- I can visit a registration page and fill in personal information.
-- If the information is invalid or I unable to create an ISA account, I cannot proceed.
-- If the information is valid I can choose a fund and an amount to invest.
-    - I cannot invest more than £20,000 in a tax year.
-    - I must pick a fund to invest in.
-- I can review my application before submitting.
-- After submission I see a success page with a link to login
-
-### Scenario: An existing customer can view information about their accounts
-
-As an existing Cushon retail customer who has authenticated:
-
-- I can visit the accounts page, where I can see a list of my accounts.
-    - I can click on an account to see more information.
-- On the individual account page:
-    - I can see which funds I am invested in and how much is invested.
-    - I can see a table of recent transactions on the account.
-
-### Scenario: An existing customer can change the fund in which their money is invested
-
-As an existing Cushon retail customer with an invested ISA who is authenticated:
-
-- I can visit my ISA account page:
-    - I can select a new fund in which to invest all of my money.
-    - I can confirm the selection.
-    - I see a success/failure message.
+- The existing authentication system can be used to support retail customers.
+- The same funds are available to both retail and employee customers (and that a service already exists to manage them).
+- For this assignment, currency is assumed to be GBP, and all monetary values are stored to the nearest penny as ints.
+- There is an existing service to perform trades.
+- There is an existing service to process deposits (card payment/bank transfer etc.).
+- There is an API gateway in place to serve the web UI and provide authentication.
+    - Requests from the gateway contain a session with the current customerID
 
 ## Proposed Solution
 
 *The research that led to my solution can be found [here](https://github.com/jameswhoughton/cushon/blob/main/RESEARCH.md).*
 
-I propose the addition of two new services: 'retailCustomerService' to manage retail customers and 'retailAccountService' which manages retail accounts (this is intentionally generic in anticipation of Cushon offering other types of savings accounts). Both services use a REST api to expose thier functionality to the wider system.
+### Overview
 
-I did consider the possibility of reusing an existing 'customer' service (that may already exist for creating employee customers), however having a separate one has several benefits:
+I propose the addition of two new services: 
 
-- Can scale independently of existing employeeCustomerService
-- Creates a clear boundary for auditing
-- Allows either each entity to evolve independently (e.g. addition of new fields etc.)
+1. Retail Customer Service - Manage retail customers
+2. Retail Account Service - Manage retail accounts.
 
-On the other hand it does add some more complexity and possibly some duplication (this could be slightly mitigated through the use of a shared package as mentioned in improvements). Without knowing more about the existing system it is hard to say more at this time.
+Both services will use a REST API to expose their functionality to the wider system.
 
-Both services will be stateless and have a single replica of each service to increase resiliency.
+### Reasoning For Separate Services
 
-Databases will use MySQL, this aligns with other services as well as being capable of handling big data, when designing the schema I have tried to optimise the table sizes as much as possible. 
+Separating the logic for retail customers and accounts from the existing employee services has several benefits:
 
-I have noted that the 'account_transactions' table will likely be the fastest growing table and therefore it is worth considering splitting the data (either by partitioning the table or sharding the database). As transactional information should be retained (indefinitely?) table partitioning may not be suitable as the number of tables might grow to be unmanageable, so a sharding approach might be more apporpriate.
+- Allows the customer/employees servies to scale independantly of one another.
+- Provides a clear boundary for auditing/regulatory purposes.
+- Allows entities to evolve independently (e.g. addition of new fields etc.)
 
-I have focused my efforts on building out the account service in Go.
+There are however some trade-offs:
 
-Considering the specific case of a customer who wishes to deposit £25,000 into a Cushon ISA and invest it all into the Cushon equities fund. From my research, if the money has not previously been invested then this would not be allowed in a single transaction (as it is above the annual ISA allowace of £20,000) if however the customer is transferring this money from another ISA this transfer would be allowed. 
+- Adds more complexity to the system (for example if an employee also opened a retail account we might want to be able to link the accounts).
+- At least in the beginning there will likely be duplication between the services (althought this could be mitigated though the use of a shared package).
 
-For now the focus is on cash deposits however the ability to transfer between ISAs without restriction should be considered as an enhancement.
+### Scale And Storage
 
-### ERD
+- I have estimated a number of registered users on the scale of 100,000 - 1,000,000 with a much smaller fraction of daily active users (my reasoning can be found in RESEARCH.md). 
+- Data scaling should be a primary consideration. I considered data partitioning and sharding but decided sharding to be a more suitable approach as it provides resiliency as well as being more scalable.
+- The application should be designed with horizontal scaling in mind in order to handle peaks in traffic (for example, around the end of the tax year).
+
+MySQL is a good choice of database for these services for the following reasons:
+
+- It can handle big data.
+- The data is relational so more suited to a relational database.
+- Aligns with other Cushon services (while not critical for microservices to use the same technology, team familiarality is a benefit).
+
+### Business considerations
+
+There are different types of ISA which Cushon may wish to offer. The new service should be able to accomodate the following:
+
+- Different requirements to open an account.
+- Different restrictions on Depositing into an account.
+- Different restrictions on withdrawing from an account.
+
+### Service Architecture
+
+I have begun to build out the retail account microservice uing the service/repository pattern and TDD.
+
+- Services contain the business logic
+- Repositories are only responsible for communicating with the MySQL database.
+- Handlers format and pass information to and from the services.
+- I am using docker to run a testing MySQL instance which is migrated/rolled back between tests.
+
+In order to accommodate different types of ISA, I have defined a Service interface that can be implemented for each type of account, on top of this I have created a factory to return the correct service where required. For common service actions I have created some generic unexported functions, these can be used to compose the account-specific services to reduce code duplication, for example, `createAccount()` in `internal/account/service.go` is responsible for validating the account passed in and calling the underlying repository method to store the account the database (a group of actions common to all account types).
+
+### Scenario: customer who wishes to deposit £25,000 into a Cushon ISA all into the Cushon Equities Fund
+
+In this specific case the customer would not be permitted to deposit £25,000 into a Cushon ISA in a single transaction. Assuming this is a standard ISA the annual limit is £20,000. The only situation in which this would be possible is if they were transferring the money from an existing ISA with another provider, in this case they would be able to transfer the whole amount into a new Cushon ISA and invest it all into the Cuson Equities fund.
+
+### Schema
 
 My proposed DB schema can be found [here](https://raw.githubusercontent.com/jameswhoughton/cushon/refs/heads/main/erd.svg), the diagram has some notes explaining my decisions.
 
-### Assumptions
+## Future Enhancements
 
-- The existing authentication system can be used to support retail customers.
-- The same funds are available to both retail and employee customers (and that a service already exists to manage them).
-- For the purposes of this assignment, currency is assumed to be GBP.
-- All monetary values are stored to the nearest penny as ints.
-- There is an existing service to perform trades.
-- All dates are stored as UTC.
-- There is an existing service to process deposits (card payment/bank transfer etc.).
-- There is an API gateway in place to serve the web UI and provide authentication.
-
-## Future enhancements
-
-- I have focused on a basic ISA, I would look to extend my solution to cover other ISA accounts along with GIA.
+- Build out the frontend.
+- I have focused on a basic ISA, and I would look to extend my solution to cover other ISA accounts.
 - Store specific currency information.
 - Consider notifications to the user (email/post).
 - Explore the idea of a shared package for personal information types and validation (e.g. validating NI number)
-- Customer personal information could be encrypted when inserted into the database, this would help to potentially reduce the impact of a data breach (direct DB access) at the cost of slight performance hit.
+- Customer personal information could be encrypted when inserted into the database, this would help to potentially reduce the impact of a data breach (direct DB access) at the cost of a slight performance hit.
 - Explore the best approach to splitting the data.
-- Consider pagination for transactions.
+- Consider pagination for transactions. My current solution limits the date range for returning transactions to 1 year.
 - Consider permissions/admin routes for account management and reporting.
 - Consider external ISA to Cushon ISA transfers.
-- Introduce in memory implementations of repositories (backed by contract tests) to improve test performance.
-
-## Endpoints
-
-### RetailCustomerService
-
-#### POST /v1/customer
-
-- Create a new retail customer
-
-### RetailAccountService
-
-#### POST /api/v1/account
-
-- Create a new account for the customer
-- Customer is limited to one cushon ISA
-
-#### GET /api/v1/account/{account_id}
-
-- List of invested funds
-- List of recent transactions
-
-#### POST /api/v1/account/{account_id}/fund/{fund_id}/invest
-
-- Invest money into a single fund
-
-
+- Introduce in-memory implementations of repositories (backed by contract tests) to improve test performance.
+- Support cash balances (uninvested money in the ISA)
