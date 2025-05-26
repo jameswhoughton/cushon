@@ -86,35 +86,4 @@ The number of daily active users would likely be fairly low (relative to total u
 
 We would still have to consider spikes which could happen at the end/beginning of the month (payday), around the end of the financial year and during ad campaigns. Without more information it's hard to estimate the percentage of DAU but if this were a real project reviewing the traffic for employee ISAs could give us some idea. 
 
-The system therefore should be able to accommodate these data spikes, a well written Go service on reasonable hardware should be able to handle this level of traffic but it would still be a good idea to have at least a single replica and distribute traffic with a load balancer, not only will this easily accommodate the traffic, it will also make the system more resilient.
-
-There are two main options when scaling databases:
-
-### Sharding
-
-Splitting data across multiple databases
-
-#### Pros
-
-- Improves resiliency (any outages are less impactful).
-- Increases response time if DBs are geographically distributed (although less of a concern here as the customers are mainly UK residents).
-- Theoretically no limit to how far you could scale.
-- Backups/maintenance 
-
-#### Cons
-
-- Adds complexity to both querying and inserting data, if the correct sharding technique is not chosen databases can become unbalanced.
-- Higher hardware costs.
-
-### Partitioning
-
-Splitting one or many tables within a database
-
-#### Pros
-
-- Easier to query a partition of data, for example, transactional data partioned by month.
-
-#### Cons
-
-- Data is still stored in a single database so this approach does not improve resiliency.
-- Backups/maintenance could be more time consuming
+The system therefore should be able to accommodate these data spikes, a well written Go service on reasonable hardware should be able to handle this level of traffic but it could still be a good idea to have at least a single replica and distribute traffic with a load balancer, not only will this easily accommodate the traffic, it will also make the system more resilient.

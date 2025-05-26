@@ -71,19 +71,19 @@ Separating the logic for retail customers and accounts from the existing employe
 There are however some trade-offs:
 
 - Adds more complexity to the system (for example if an employee also opened a retail account we might want to be able to link the accounts).
-- At least in the beginning there will likely be duplication between the services (although this could be mitigated though the use of a shared package).
+- At least in the beginning there will likely be some duplication between the services (although this could be mitigated though the use of a shared package).
 
 ### Scale And Storage
 
 - I have estimated a number of registered users on the scale of 100,000 - 1,000,000 with a much smaller fraction of daily active users (my reasoning can be found in RESEARCH.md). 
-- Data scaling should be a primary consideration. I considered data partitioning and sharding but decided sharding to be a more suitable approach as it provides resiliency as well as being more scalable.
+- While data scaling should be a consideration, MySQL should be able to handle this size of data (especially as the schema is fairly simple). If performance begins to become an issue, one option would be to create read replicas of the database. This would be preferable to sharding which would introduce a lot of complexity to the system.
 - The application should be designed with horizontal scaling in mind in order to handle peaks in traffic (for example, around the end of the tax year).
 
-MySQL is a good choice of database for these services for the following reasons:
+A RDMS such as MySQL is a good choice of database for these services for the following reasons:
 
-- It can handle big data.
+- Can handle large datasets.
 - The data is relational so more suited to a relational database.
-- Aligns with other Cushon services (while not critical for microservices to use the same technology, team familiarity is a benefit).
+- As far as I'm aware, other services in Cushon rely on MySQL so that might be the better choice (while not critical for microservices to use the same technology, team familiarity is a benefit).
 
 ### Business considerations
 
@@ -120,7 +120,6 @@ My proposed DB schema can be found [here](https://raw.githubusercontent.com/jame
 - Consider notifications to the user (email/post).
 - Explore the idea of a shared package for personal information types and validation (e.g. validating NI number)
 - Customer personal information could be encrypted when inserted into the database, this would help to potentially reduce the impact of a data breach (direct DB access) at the cost of a slight performance hit.
-- Explore the best approach to splitting the data.
 - Consider pagination for transactions. My current solution limits the date range for returning transactions to 1 year.
 - Consider permissions/admin routes for account management and reporting.
 - Consider external ISA to Cushon ISA transfers.
